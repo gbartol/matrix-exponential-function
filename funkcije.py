@@ -78,7 +78,6 @@ def arnoldi_iteration(A, v, m):
 
     return V, H, beta, breakdown
 
-<<<<<<< Updated upstream
 def Skalirani_taylor(matrica_A,broj_iteracija): 
     norma_A = math.sqrt(max(linalg.eigvals(np.transpose(matrica_A) .dot(matrica_A))).real)
     m=1
@@ -111,7 +110,6 @@ def Skalirani_taylor(matrica_A,broj_iteracija):
             y = y + (k1 + 2*k2 + 2*k3 + k4) / 6
 
         return y
-=======
 
 def expm_arnoldi(A,v,t = 1.0, m=30):
     V, H, beta, breakdown = arnoldi_iteration(A,v,m)
@@ -131,4 +129,3 @@ def expm_arnoldi(A,v,t = 1.0, m=30):
     
     return w, err_est
 
->>>>>>> Stashed changes
