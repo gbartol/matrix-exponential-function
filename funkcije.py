@@ -58,7 +58,7 @@ def Pade_simetricni(matrica_A,q):
         potencija_A = np.linalg.matrix_power(matrica_A, j)
         Npq += potencija_A*((q_q_j*q_)/(q_q*j_*q_j))
         potencija_A_neg = np.linalg.matrix_power(-matrica_A, j)
-        Dpq += potencija_A*((q_q_j*q_)/(q_q*j_*q_j))
+        Dpq += potencija_A_neg*((q_q_j*q_)/(q_q*j_*q_j))
 
     Rpq = linalg.solve(Dpq, Npq)
     return Rpq
