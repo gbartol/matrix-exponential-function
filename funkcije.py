@@ -16,7 +16,7 @@ def expm_taylor(A, broj_iteracija = 30):
 
 def Pade_aproksimacija(matrica_A,p,q):
     #Pade dekompozicija algoritam
-    dimenzija = len(A)
+    dimenzija = len(matrica_A)
     Npq = np.zeros((dimenzija,dimenzija))
     Dpq = np.zeros((dimenzija,dimenzija))
 
@@ -144,18 +144,18 @@ def Skalirani_taylor(matrica_A,broj_iteracija):
     return exp_A
 
     
-    def expmv_rk4(A, v, t, steps):
-        h = t / steps
-        y = np.asarray(v).copy()
+def expmv_rk4(A, v, t, steps):
+    h = t / steps
+    y = np.asarray(v).copy()
 
-        for _ in range(steps):
-            k1 = h * (A @ y)
-            k2 = h * (A @ (y + k1 / 2))
-            k3 = h * (A @ (y + k2 / 2))
-            k4 = h * (A @ (y + k3))
-            y = y + (k1 + 2*k2 + 2*k3 + k4) / 6
+    for _ in range(steps):
+        k1 = h * (A @ y)
+        k2 = h * (A @ (y + k1 / 2))
+        k3 = h * (A @ (y + k2 / 2))
+        k4 = h * (A @ (y + k3))
+        y = y + (k1 + 2*k2 + 2*k3 + k4) / 6
 
-        return y
+    return y
 
 def expm_arnoldi(A,v,t = 1.0, m=30):
     V, H, beta, breakdown = arnoldi_iteration(A,v,m)
@@ -175,3 +175,34 @@ def expm_arnoldi(A,v,t = 1.0, m=30):
     
     return w, err_est
 
+def Skalirani_Pade(matrica_A):
+    norma_A = math.sqrt(max(linalg.eigvals(np.transpose(matrica_A) .dot(matrica_A))).real)
+    pade_vrijednosti = np.array([
+        [[1, 0], [1, 0], [2, 0], [3, 0], [3, 0]],
+        [[1, 0], [2, 0], [3, 0], [4, 0], [4, 0]],
+        [[2, 1], [3, 1], [4, 1], [5, 1], [6, 1]],
+        [[2, 5], [3, 5], [4, 5], [5, 5], [6, 5]],
+        [[2, 8], [3, 8], [4, 8], [5, 8], [6, 8]],
+        [[2, 11], [3, 11], [4, 11], [5, 11], [6, 11]]
+    ])
+
+    norma_A_om = int(round(math.log10(norma_A),0))
+
+    red = norma_A_om+2
+    stupac = 2
+
+    q = pade_vrijednosti[red][stupac][0]
+    j = pade_vrijednosti[red][stupac][1]
+    m=1
+    while(j>1):
+        matrica_A = matrica_A/2
+        j-=1
+        m *=2
+
+    Rqq=Pade_aproksimacija(matrica_A,q,q)
+
+    while(j<pade_vrijednosti[red][stupac][1]):
+        Rqq = Rqq.dot(Rqq)
+        j += 1
+
+    return Rqq
