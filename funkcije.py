@@ -14,8 +14,54 @@ def expm_taylor(A, broj_iteracija = 30):
 
     return exp_A
 
-def expm_pade(A, p = 6, q = 6):
-    #TO DO 
+def Pade_aproksimacija(matrica_A,p,q):
+    #Pade dekompozicija algoritam
+    dimenzija = len(A)
+    Npq = np.zeros((dimenzija,dimenzija))
+    Dpq = np.zeros((dimenzija,dimenzija))
+
+
+    for j in range(0,p+1):
+        p_q_j = float(math.factorial(p+q-j))
+        p_ = float(math.factorial(p))
+        p_q = float(math.factorial(p+q))
+        j_ = float(math.factorial(j))
+        p_j = float(math.factorial(p-j))
+        potencija_A = np.linalg.matrix_power(matrica_A, j)
+        Npq += potencija_A*((p_q_j*p_)/(p_q*j_*p_j))
+
+    for j in range(0,q+1):
+        p_q_j = float(math.factorial(p+q-j))
+        q_ = float(math.factorial(q))
+        p_q = float(math.factorial(p+q))
+        j_ = float(math.factorial(j))
+        q_j = float(math.factorial(q-j))
+        potencija_A = np.linalg.matrix_power(-matrica_A, j)
+        Dpq += potencija_A*((p_q_j*q_)/(p_q*j_*q_j))
+
+    Rpq = linalg.solve(Dpq, Npq)
+    return Rpq
+
+def Pade_simetricni(matrica_A,q):
+    #Pade dekompozicija algoritam
+    dimenzija = len(matrica_A)
+    Npq = np.zeros((dimenzija,dimenzija))
+    Dpq = np.zeros((dimenzija,dimenzija))
+    potencija_A = np.array(matrica_A, dtype=float)  
+
+    for j in range(0,q+1):
+        q_q_j = float(math.factorial(q+q-j))
+        q_ = float(math.factorial(q))
+        q_q = float(math.factorial(q+q))
+        j_ = float(math.factorial(j))
+        q_j = float(math.factorial(q-j))
+        potencija_A = np.linalg.matrix_power(matrica_A, j)
+        Npq += potencija_A*((q_q_j*q_)/(q_q*j_*q_j))
+        potencija_A_neg = np.linalg.matrix_power(-matrica_A, j)
+        Dpq += potencija_A*((q_q_j*q_)/(q_q*j_*q_j))
+
+    Rpq = linalg.solve(Dpq, Npq)
+    return Rpq
 
 def arnoldi_iteration(A, v, m):
 
