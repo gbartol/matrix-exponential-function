@@ -76,3 +76,21 @@ def arnoldi_iteration(A, v, m):
 
     return V, H, beta, breakdown
 
+def Skalirani_taylor(matrica_A,broj_iteracija): 
+    norma_A = math.sqrt(max(linalg.eigvals(np.transpose(matrica_A) .dot(matrica_A))).real)
+    m=1
+    if(norma_A<=1):
+        print("Matrica ima malu normu. Skaliranje nije potrebno. Nastavljam s običnim Taylorovim razvojem\n")
+
+    while(norma_A>1):
+        norma_A = norma_A/2
+        m *= 2
+
+    matrica_A = matrica_A/m
+    exp_A = expm_taylor(matrica_A,broj_iteracija)
+
+    while(m>1):
+        exp_A = exp_A.dot(exp_A)
+        m=m/2
+    
+    return exp_A
