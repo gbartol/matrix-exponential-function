@@ -144,7 +144,7 @@ def Skalirani_taylor(matrica_A,broj_iteracija):
     return exp_A
 
     
-def expmv_rk4(A, v, t, steps):
+def expm_rk4(A, v, t, steps):
     h = t / steps
     y = np.asarray(v).copy()
 
