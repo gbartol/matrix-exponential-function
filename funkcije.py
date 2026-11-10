@@ -43,6 +43,17 @@ def Pade_aproksimacija(matrica_A,p,q):
     return Rpq
 
 def Pade_simetricni(matrica_A,q):
+    # SKALIRANJE
+    # e^A = (e^(A/m))^m
+    # m je najmanji pow 2 t.d. ||A||/m <= 1
+    # cancelation error i loša uvjetovanost nazivnika Dpq
+    norma_A = linalg.norm(matrica_A, ord=np.inf)
+    m = 0
+    if norma_A > 0.5:
+        m = int(np.ceil(np.log2(norma_A/0.5)))
+        matrica_A = matrica_A /(2.0 ** m)
+
+
     #Pade dekompozicija algoritam
     dimenzija = len(matrica_A)
     Npq = np.zeros((dimenzija,dimenzija))
@@ -61,7 +72,14 @@ def Pade_simetricni(matrica_A,q):
         Dpq += potencija_A_neg*((q_q_j*q_)/(q_q*j_*q_j))
 
     Rpq = linalg.solve(Dpq, Npq)
+
+    # Vračanje originala
+    for _ in range(m):
+        Rpq = Rpq.dot(Rpq)
+
     return Rpq
+def expm_pade(A, p = 6, q = 6):
+    #TO DO 
 
 def arnoldi_iteration(A, v, m):
 
@@ -161,7 +179,8 @@ def expm_arnoldi(A,v,t = 1.0, m=30):
     V, H, beta, breakdown = arnoldi_iteration(A,v,m)
     k = H.shape[1]
     H_k = H[:k, :k]
-    exp_H = linalg.expm(t*H_k) # TO DO, iskoristi Vidovo remek dijelo
+    exp_H = Pade_simetricni(t*H_k, 6) # TO DO, iskoristi Vidovo remek dijelo
+    exp_H = linalg.expm(t*H_k)
 
     #w = beta * V_k * exp(t * H_k) * e_1
     y = exp_H[:, 0]
