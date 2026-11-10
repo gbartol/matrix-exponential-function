@@ -16,7 +16,7 @@ def expm_taylor(A, broj_iteracija = 30):
 
 def Pade_aproksimacija(matrica_A,p,q):
     #Pade dekompozicija algoritam
-    dimenzija = len(A)
+    dimenzija = len(matrica_A)
     Npq = np.zeros((dimenzija,dimenzija))
     Dpq = np.zeros((dimenzija,dimenzija))
 
@@ -144,18 +144,18 @@ def Skalirani_taylor(matrica_A,broj_iteracija):
     return exp_A
 
     
-    def expmv_rk4(A, v, t, steps):
-        h = t / steps
-        y = np.asarray(v).copy()
+def expmv_rk4(A, v, t, steps):
+    h = t / steps
+    y = np.asarray(v).copy()
 
-        for _ in range(steps):
-            k1 = h * (A @ y)
-            k2 = h * (A @ (y + k1 / 2))
-            k3 = h * (A @ (y + k2 / 2))
-            k4 = h * (A @ (y + k3))
-            y = y + (k1 + 2*k2 + 2*k3 + k4) / 6
+    for _ in range(steps):
+        k1 = h * (A @ y)
+        k2 = h * (A @ (y + k1 / 2))
+        k3 = h * (A @ (y + k2 / 2))
+        k4 = h * (A @ (y + k3))
+        y = y + (k1 + 2*k2 + 2*k3 + k4) / 6
 
-        return y
+    return y
 
 def expm_arnoldi(A,v,t = 1.0, m=30):
     V, H, beta, breakdown = arnoldi_iteration(A,v,m)
