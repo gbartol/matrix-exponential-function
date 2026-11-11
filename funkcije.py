@@ -329,3 +329,20 @@ def Chebysheva_Aproksimacija(matrica_A,q):
 
     exp_A = np.linalg.inv(Cqq)
     return exp_A
+
+def Lagrange(matrica_A,t=1):
+
+    eigenvalues = np.linalg.eigvals(matrica_A)
+    d=matrica_A.shape[0]
+    n = len(eigenvalues)
+    exp_A = np.zeros((d, d))
+    I = np.eye(d)
+    for j in range(n):
+        koef = math.e**(eigenvalues[j]*t)
+        temp_A = np.eye(d)
+        for k in range(n):
+            if k!=j:
+                temp_A = temp_A @ ((matrica_A-I*eigenvalues[k])/(eigenvalues[j]-eigenvalues[k]))
+        exp_A = exp_A + koef*temp_A
+
+    return exp_A
