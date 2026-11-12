@@ -346,3 +346,32 @@ def Lagrange(matrica_A,t=1):
         exp_A = exp_A + koef*temp_A
 
     return exp_A
+
+def Pomocna_rekurzija(niz,t,pocetak,kraj):
+    if(pocetak+1 == kraj):
+        return (math.e**(niz[pocetak]*t)-math.e**(niz[kraj]*t))/(niz[pocetak]-niz[kraj])
+    else:
+        return (Pomocna_rekurzija(niz,t,pocetak,kraj-1)-Pomocna_rekurzija(niz,t,pocetak+1,kraj))/(niz[pocetak]-niz[kraj])
+    
+def Newton(matrica_A,t=1):
+    n = matrica_A.shape[0]
+    eigenvalues = np.linalg.eigvals(matrica_A)
+    eigenvalues = np.insert(eigenvalues,0,0)
+    I = np.eye(n)
+
+    exp_A = math.e**(eigenvalues[1]*t)*I
+
+    temp_A = np.zeros(n)
+    for j in range(2,len(eigenvalues)):
+
+        rek = Pomocna_rekurzija(eigenvalues,t,1,j)
+
+        fakt=I
+
+        for k in range(1,j):
+            fakt = fakt @ (matrica_A-eigenvalues[k]*I)
+        
+        temp_A = temp_A + rek*fakt
+    
+    exp_A = exp_A + temp_A
+    return exp_A
