@@ -3,19 +3,19 @@ import math
 from scipy import linalg
 import sys
 
-def expm_taylor(A, broj_iteracija = 30):
+def expm_taylor(A, broj_iteracija = 50,t=1,*args,**kwargs):
     n = A.shape[0]
     exp_A = np.eye(n, dtype = float)
     potencija_A = np.array(A, dtype = float)
 
     for i in range(1, broj_iteracija + 1):
         fakt = float(math.factorial(i))
-        exp_A += potencija_A / fakt
+        exp_A += (potencija_A *(t**i))/ fakt
         potencija_A = potencija_A.dot(A)
-
+        
     return exp_A
 
-def Pade_aproksimacija(matrica_A,p,q):
+def Pade_aproksimacija(matrica_A,p=10,q=10):
     #Pade dekompozicija algoritam
     dimenzija = len(matrica_A)
     Npq = np.zeros((dimenzija,dimenzija))
@@ -143,7 +143,7 @@ def arnoldi_iteration(A, v, m):
 
     return V, H, beta, breakdown
 
-def Skalirani_taylor(matrica_A,broj_iteracija): 
+def Skalirani_taylor(matrica_A,broj_iteracija=50,t=1): 
     norma_A = math.sqrt(max(linalg.eigvals(np.transpose(matrica_A) .dot(matrica_A))).real)
     m=1
     if(norma_A<=1):
@@ -154,7 +154,7 @@ def Skalirani_taylor(matrica_A,broj_iteracija):
         m *= 2
 
     matrica_A = matrica_A/m
-    exp_A = expm_taylor(matrica_A,broj_iteracija)
+    exp_A = expm_taylor(matrica_A,broj_iteracija,t)
 
     while(m>1):
         exp_A = exp_A.dot(exp_A)
@@ -195,7 +195,7 @@ def expm_arnoldi(A,v,t = 1.0, m=30):
     
     return w, err_est
 
-def Skalirani_Pade(matrica_A):
+def Skalirani_Pade(matrica_A, *args,**kwargs):
     norma_A = math.sqrt(max(linalg.eigvals(np.transpose(matrica_A) .dot(matrica_A))).real)
     pade_vrijednosti = np.array([
         [[1, 0], [1, 0], [2, 0], [3, 0], [3, 0]],
@@ -224,7 +224,8 @@ def Skalirani_Pade(matrica_A):
         Rqq = Rqq.dot(Rqq)
         j += 1
 
-    return Rqq
+    err_est = norma_A*stupac
+    return Rqq,err_est
 
 def Chebysheva_Aproksimacija(matrica_A,q):
     
@@ -330,7 +331,7 @@ def Chebysheva_Aproksimacija(matrica_A,q):
     exp_A = np.linalg.inv(Cqq)
     return exp_A
 
-def Lagrange(matrica_A,t=1):
+def Lagrange(matrica_A,v=None,t=1,*args,**kwargs):
 
     eigenvalues = np.linalg.eigvals(matrica_A)
     d=matrica_A.shape[0]
@@ -353,7 +354,9 @@ def Pomocna_rekurzija(niz,t,pocetak,kraj):
     else:
         return (Pomocna_rekurzija(niz,t,pocetak,kraj-1)-Pomocna_rekurzija(niz,t,pocetak+1,kraj))/(niz[pocetak]-niz[kraj])
     
-def Newton(matrica_A,t=1):
+def Newton(matrica_A,v=None,t=1,*args,**kwargs):
+    #Dobra metoda za male matrice
+    #Iznimno spora za velike matrice zbog rekurzije
     n = matrica_A.shape[0]
     eigenvalues = np.linalg.eigvals(matrica_A)
     eigenvalues = np.insert(eigenvalues,0,0)
@@ -375,3 +378,18 @@ def Newton(matrica_A,t=1):
     
     exp_A = exp_A + temp_A
     return exp_A
+
+def Hessenberg(matrica_A):
+    try:
+        from pomoćne_hessenberg_funkcije import orthes, ortran, expm_lower_hessenberg
+    except ImportError as e:
+        raise ImportError(
+            "Nisam uspio importati Hessenberg pomoćne funkcije."
+        ) from e
+    
+    # Reduce A^T = Q H Q^T (H upper)  =>  A = Q H^T Q^T with H^T lower
+    packed, ort = orthes(matrica_A.T)
+    Q = ortran(packed, ort)
+    H = np.triu(packed, -1)  
+    L = H.T
+    return Q @ expm_lower_hessenberg(L) @ Q.T
