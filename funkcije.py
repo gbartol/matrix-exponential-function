@@ -381,7 +381,7 @@ def Newton(matrica_A,v=None,t=1,*args,**kwargs):
 
 def Hessenberg(matrica_A):
     try:
-        from pomoćne_hessenberg_funkcije import orthes, ortran, expm_lower_hessenberg
+        from pomoćne_eispack_funkcije import orthes, ortran, expm_lower_hessenberg
     except ImportError as e:
         raise ImportError(
             "Nisam uspio importati Hessenberg pomoćne funkcije."
@@ -393,3 +393,12 @@ def Hessenberg(matrica_A):
     H = np.triu(packed, -1)  
     L = H.T
     return Q @ expm_lower_hessenberg(L) @ Q.T
+
+def Tri_Sys_Eig(matrica_A):
+    from pomoćne_eispack_funkcije import eig_QRD,exp_tD      # ORTHES + ORTRAN from earlier
+    from scipy import linalg
+    Q, R, D, T = eig_QRD(matrica_A)
+    V = Q @ R
+    Y = linalg.solve(R,Q.T)
+    exp_A = V @ exp_tD(D) @ Y
+    return exp_A
