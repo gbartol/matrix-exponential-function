@@ -7,7 +7,8 @@ from funkcije import (
     Skalirani_taylor,
     Pade_aproksimacija,
     Lagrange,
-    Hessenberg
+    Hessenberg,
+    Tri_Sys_Eig
 )
 
 def test_osnovna_tocnost(funckija):
@@ -50,4 +51,5 @@ if __name__ == "__main__":
     test_osnovna_tocnost(Pade_aproksimacija)
     test_osnovna_tocnost(Lagrange)
     test_osnovna_tocnost(Hessenberg)
+    test_osnovna_tocnost(Tri_Sys_Eig)
 
