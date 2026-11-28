@@ -18,35 +18,28 @@ def orthes(A, low=0, igh=None): #Vraća modificiranu matricu A i pomoćni vektor
     igh = n - 1 if igh is None else igh
     ort = np.zeros(n)
 
-    # Column m-1 is reduced for m = low+1 .. igh-1
     for m in range(low + 1, igh):
         col = m - 1
-
         # Step 1: scale the column to avoid over/underflow
         scale = np.sum(np.abs(A[m:igh + 1, col]))
         if scale == 0.0:
             continue                      # already zero below subdiagonal
-
         # Step 2: scaled column and its squared norm
         ort[m:igh + 1] = A[m:igh + 1, col] / scale
         h = np.dot(ort[m:igh + 1], ort[m:igh + 1])
-
         # Step 3: sign choice avoids cancellation; build Householder vector u
         g = -copysign(sqrt(h), ort[m])
         h = h - ort[m] * g
         ort[m] = ort[m] - g               # u = ort[m:igh+1], P = I - u u^T / h
-
         # Step 4: apply P from the left to rows m..igh, columns m..n-1
         u = ort[m:igh + 1]
         for j in range(m, n):
             f = np.dot(u, A[m:igh + 1, j]) / h
             A[m:igh + 1, j] -= f * u
-
         # Step 5: apply P from the right to rows 0..igh, columns m..igh
         for i in range(igh + 1):
             f = np.dot(A[i, m:igh + 1], u) / h
             A[i, m:igh + 1] -= f * u
-
         # Step 6: store results.  A[m+1:, col] keeps the scaled vector
         # (untouched by steps 4-5), A[m, col] becomes the new subdiagonal.
         ort[m] = scale * ort[m]
@@ -255,7 +248,7 @@ def back_substitution(T):
 # --------------------------------------------------------------------------
 # 5. Driver
 # --------------------------------------------------------------------------
-def eig_QRD(A):
+def eig_orthes_QRD(A):
     H, Q0 = hessenberg(A)                  # ORTHES + ORTRAN
     T, Q = schur_francis(H, Q0)            # T = Q^T A Q
     R, D = back_substitution(T)            # T R = R D

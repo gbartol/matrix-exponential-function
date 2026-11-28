@@ -12,10 +12,10 @@ def expm_taylor(A, broj_iteracija = 50,t=1,*args,**kwargs):
         fakt = float(math.factorial(i))
         exp_A += (potencija_A *(t**i))/ fakt
         potencija_A = potencija_A.dot(A)
-        
+
     return exp_A
 
-def Pade_aproksimacija(matrica_A,p=10,q=10):
+def Pade_aproksimacija(matrica_A,p=60,q=60):
     #Pade dekompozicija algoritam
     dimenzija = len(matrica_A)
     Npq = np.zeros((dimenzija,dimenzija))
@@ -379,7 +379,7 @@ def Newton(matrica_A,v=None,t=1,*args,**kwargs):
     exp_A = exp_A + temp_A
     return exp_A
 
-def Hessenberg(matrica_A):
+def Companion_Matrix_Orthes(matrica_A):
     try:
         from pomoćne_eispack_funkcije import orthes, ortran, expm_lower_hessenberg
     except ImportError as e:
@@ -387,7 +387,6 @@ def Hessenberg(matrica_A):
             "Nisam uspio importati Hessenberg pomoćne funkcije."
         ) from e
     
-    # Reduce A^T = Q H Q^T (H upper)  =>  A = Q H^T Q^T with H^T lower
     packed, ort = orthes(matrica_A.T)
     Q = ortran(packed, ort)
     H = np.triu(packed, -1)  
@@ -395,9 +394,9 @@ def Hessenberg(matrica_A):
     return Q @ expm_lower_hessenberg(L) @ Q.T
 
 def Tri_Sys_Eig(matrica_A):
-    from pomoćne_eispack_funkcije import eig_QRD,exp_tD      # ORTHES + ORTRAN from earlier
+    from pomoćne_eispack_funkcije import eig_orthes_QRD,exp_tD      # ORTHES + ORTRAN from earlier
     from scipy import linalg
-    Q, R, D, T = eig_QRD(matrica_A)
+    Q, R, D, T = eig_orthes_QRD(matrica_A)
     V = Q @ R
     Y = linalg.solve(R,Q.T)
     exp_A = V @ exp_tD(D) @ Y
